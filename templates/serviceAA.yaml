@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "apiflows.name" . }}-aa
+  labels:
+    app: {{ include "apiflows.name" . }}-aa
+    app.kubernetes.io/name: {{ include "apiflows.name" . }}
+    helm.sh/chart: {{ include "apiflows.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: httpsaasi
+      port: {{ .Values.service.portAASI }}
+      targetPort: {{ .Values.service.targetPortAASI }}
+    - name: httpsaaropc
+      port: {{ .Values.service.portAAROPC }}
+      targetPort: {{ .Values.service.targetPortAAROPC }}
+  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
+      
+  selector:
+    app: {{ include "apiflows.name" . }}
+    app.kubernetes.io/name: {{ include "apiflows.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

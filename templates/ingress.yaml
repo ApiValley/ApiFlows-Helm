@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "apiflows.name" . }}
+  annotations: 
+    #kubernetes.io/ingress.class: nginx
+    # B2C
+    #nginx.ingress.kubernetes.io/auth-url: "https://zmtest3.b2clogin.com/zmtest3.onmicrosoft.com/B2C_1_SiUpIn/oauth2/v2.0/authorize"
+    #nginx.ingress.kubernetes.io/auth-signin: "https://$host/oauth2/start?rd=$escaped_request_uri"
+    #nginx.ingress.kubernetes.io/auth-method: "GET"
+    # GitHub
+    #nginx.ingress.kubernetes.io/auth-url: "https://$host/oauth2/auth"
+    #nginx.ingress.kubernetes.io/auth-signin: "https://$host/oauth2/start?rd=$escaped_request_uri"
+    #auth_url: https://zmtest3.b2clogin.com/zmtest3.onmicrosoft.com/B2C_1_SiUpIn/oauth2/v2.0/authorize
+    #token_url: https://zmtest3.b2clogin.com/zmtest3.onmicrosoft.com/B2C_1_SiUpIn/oauth2/v2.0/token
+
+  
+spec:
+  tls:
+    - hosts:
+      - {{ .Values.ingress.resthost }}
+      # This assumes tls-secret exists and the SSL 
+      # certificate contains a CN for foo.bar.com
+      secretName: apivalley-secret
+  rules:
+    - host: {{ .Values.ingress.resthost }}
+      http:
+        paths: 
+          - backend:
+              serviceName: {{ include "apiflows.name" . }}
+              servicePort: {{ .Values.service.port }}
+            path: /

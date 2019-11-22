@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+{{- if .Values.service.annotations }}
+  annotations:
+{{ toYaml .Values.service.annotations | indent 4 }}
+{{- end }}
+  name: {{ include "apiflows.name" . }}
+  labels:
+    app: {{ include "apiflows.name" . }}
+    app.kubernetes.io/name: {{ include "apiflows.name" . }}
+    helm.sh/chart: {{ include "apiflows.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: http
+#      nodePort: {{ .Values.service.nodePort }}
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+    - name: https
+#      nodePort: {{ .Values.service.nodePortHttps }}
+      port: {{ .Values.service.portHttps }}
+      targetPort: {{ .Values.service.targetPortHttps }}
+#  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
+
+  selector:
+    app: {{ include "apiflows.name" . }}
+    app.kubernetes.io/name: {{ include "apiflows.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

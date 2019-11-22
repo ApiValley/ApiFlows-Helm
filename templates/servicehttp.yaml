@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ include "apiflows.name" . }}-metrics"
+  labels:
+    app: "{{ include "apiflows.name" . }}-metrics"
+    app.kubernetes.io/name: {{ include "apiflows.name" . }}
+    helm.sh/chart: {{ include "apiflows.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.service.porthttp }}
+      targetPort: {{ .Values.service.targetPorthttp }}
+      
+  selector:
+    app: {{ include "apiflows.name" . }}
+    app.kubernetes.io/name: {{ include "apiflows.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

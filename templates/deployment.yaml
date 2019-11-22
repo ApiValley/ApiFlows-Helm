@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "apiflows.fullname" . }}
+  labels:
+    app: {{ include "apiflows.name" . }}
+    app.kubernetes.io/name: {{ include "apiflows.name" . }}
+    helm.sh/chart: {{ include "apiflows.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "apiflows.name" . }}
+      app.kubernetes.io/name: {{ include "apiflows.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "apiflows.name" . }}
+        app.kubernetes.io/name: {{ include "apiflows.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: telegraf-{{ .Chart.Name }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.telegraf.image.repository }}:{{ .Values.telegraf.image.tag }}"
+          resources:
+{{ toYaml .Values.telegraf.resources | indent 12 }}
+          volumeMounts:
+          - name: telegrafconfig 
+            mountPath: /etc/telegraf
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 2337
+              protocol: TCP
+            - name: https
+              containerPort: 2338
+              protocol: TCP
+            - name: httpaasi
+              containerPort: 2437
+              protocol: TCP
+            - name: httpaaropc
+              containerPort: 2439
+              protocol: TCP
+          env:
+            - name: LOG_LEVEL
+              value: {{ .Values.logLevel }}
+            - name: DNSZONE
+              value: {{ .Values.dnsZone }}
+            - name: PROVIDER
+              value: {{ .Values.provider }}
+            - name: ZONENAME
+              value: {{ .Values.zoneName }}
+            - name: REPOSITORYADDRESS
+              value: {{ .Values.repositoryAddress }}
+            - name: AZURESTATICIPADDRESS
+              value: {{ .Values.ingressControllerIpAddress }}
+            {{- if eq .Values.provider "azure"}}
+            - name: AZURESTATICIPRESOURCEGROUP
+              value: static-ips-permanent
+            - name: RESOURCEGROUPNAME
+              value: {{ .Values.azure.aksResourceGroup }}
+            - name: AZUREFILESHAREDBCNX
+              value: {{ .Values.azure.filestoragedbconnexionstring }}
+            - name: AZUREFILESHARENRCNX
+              value: {{ .Values.azure.filestoragenrconnexionstring }}
+            {{- end}}
+            
+         
+          {{- if eq .Values.provider "azure"}}    
+          volumeMounts:
+          - name: azure-config-file
+            mountPath: /zm_secret
+            readOnly: true
+          {{- end}}
+          readinessProbe:
+            httpGet:
+              path: /readyness
+              port: 2337
+              scheme: HTTP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+      {{- if eq .Values.provider "azure"}}
+      - name: azure-config-file
+        secret:
+           secretName: azure-config-file
+      {{- end}}
+      - name: telegrafconfig
+        configMap:
+           name: apiflows-telegraf
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
