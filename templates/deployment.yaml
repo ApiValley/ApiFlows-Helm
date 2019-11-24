@@ -69,9 +69,33 @@ spec:
               value: {{ .Values.azure.filestoragedbconnexionstring }}
             - name: AZUREFILESHARENRCNX
               value: {{ .Values.azure.filestoragenrconnexionstring }}
+            - name: AZUREB2CTENANTNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "apiflows.fullname" . }}
+                  key: azure-b2c-tenantname
+              value: {{ .Values.azure.b2c.tenantname }}
+            - name: AZUREB2CTENANTID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "apiflows.fullname" . }}
+                  key: azure-b2c-tenantid
+            - name: AZUREB2CCLIENTID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "apiflows.fullname" . }}
+                  key: azure-b2c-clientid
+            - name: AZUREB2CPOLICYNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "apiflows.fullname" . }}
+                  key: azure-b2c-policyname
+            - name: AZUREB2CAUDIENCE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "apiflows.fullname" . }}
+                  key: azure-b2c-audience
             {{- end}}
-            
-         
           {{- if eq .Values.provider "azure"}}    
           volumeMounts:
           - name: azure-config-file
