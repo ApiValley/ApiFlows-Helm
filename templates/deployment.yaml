@@ -23,14 +23,6 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       containers:
-        - name: telegraf-{{ .Chart.Name }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          image: "{{ .Values.telegraf.image.repository }}:{{ .Values.telegraf.image.tag }}"
-          resources:
-{{ toYaml .Values.telegraf.resources | indent 12 }}
-          volumeMounts:
-          - name: telegrafconfig 
-            mountPath: /etc/telegraf
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -74,7 +66,6 @@ spec:
                 secretKeyRef:
                   name: {{ template "apiflows.fullname" . }}
                   key: azure-b2c-tenantname
-              value: {{ .Values.azure.b2c.tenantname }}
             - name: AZUREB2CTENANTID
               valueFrom:
                 secretKeyRef:
@@ -115,9 +106,6 @@ spec:
         secret:
            secretName: azure-config-file
       {{- end}}
-      - name: telegrafconfig
-        configMap:
-           name: apiflows-telegraf
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
