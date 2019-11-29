@@ -12,6 +12,13 @@ azure:
   filestoragenrconnexionstring: DefaultEndpointsProtocol=https;AccountName=zmuserstorage2;AccountKey=Ri9buc11+4uMXV8C2cGEQHlSvJ5erCNxw4Tfq6to8LEP6l+qDbZLlUB79OJ0bFwxWZLrLWpSZLS++U+gaBASGw==;EndpointSuffix=core.windows.net
   filestoragedbconnexionstring: DefaultEndpointsProtocol=https;AccountName=zmuserstorage2;AccountKey=Ri9buc11+4uMXV8C2cGEQHlSvJ5erCNxw4Tfq6to8LEP6l+qDbZLlUB79OJ0bFwxWZLrLWpSZLS++U+gaBASGw==;EndpointSuffix=core.windows.net
 
+  b2c:
+    tenantname: apiflows
+    tenantid: apiflows.onmicrosoft.com
+    clientid: 5c6375a2-5df5-4a7f-b1f5-ed3b4accd6b8
+    policyname: B2C_1_ROPC
+    audience: 5b4c86c8-52c9-4bfd-aa89-7d272dd8fe31
+
 ingressControllerIpAddress: 51.145.39.222
 repositoryAddress: zmeter2.azurecr.io
 zoneName: apivalley.org
@@ -85,4 +92,5 @@ tolerations: []
 affinity: {}
 
 serviceMonitorEnabled: false
+
 
