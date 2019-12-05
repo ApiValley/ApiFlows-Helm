@@ -8,6 +8,6 @@ entries:
     digest: ef8ce52e779ebb23c892f2aa7b30cf6d92e3267ef8b6c10034524a0f01ef2c6f
     name: apiflows
     urls:
-    - https://ApiValley.github.com/ApiFlows-Helm/apiflows-0.1.0.tgz
+    - https://apivalley.github.io/ApiFlows-Helm/apiflows-0.1.0.tgz
     version: 0.1.0
 generated: "2019-11-29T11:36:48.045677977+01:00"
